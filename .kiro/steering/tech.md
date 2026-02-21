@@ -7,7 +7,7 @@
 - Language: Python
 - Dependency Manager: uv
 - Agent Framework: Agno (main agent orchestrator)
-- Testing Framework: langwatch-scenario (for unit testing agent functionalities, http://scenario.langwatch.ai) 
+- Testing Framework: pytest
 
 ## Configuration
 
@@ -32,16 +32,16 @@ uv add --dev <package-name>
 uv run python <script.py>
 ```
 
-### Testing (scenario)
+### Testing
 ```bash
 # Run all tests
-uv run scenario
+uv run pytest
 
 # Run specific test file
-uv run scenario tests/test_agent.py
+uv run pytest tests/test_agent.py
 
 # Run with verbose output
-uv run scenario -v
+uv run pytest -v
 ```
 
 ### Development

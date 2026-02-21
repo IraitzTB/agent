@@ -55,17 +55,17 @@ This project follows spec-driven development:
 
 ## Testing
 
-Tests use the scenario framework for agent functionality testing:
+Tests use the pytest framework for agent functionality testing:
 
 ```bash
 # Run all tests
-uv run scenario
+uv run pytest
 
 # Run specific test
-uv run scenario tests/test_greeting_agent.py
+uv run pytest tests/test_greeting_agent.py
 
 # Verbose output
-uv run scenario -v
+uv run pytest -v
 ```
 
 ## Key Features
