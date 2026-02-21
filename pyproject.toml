@@ -1,0 +1,16 @@
+[project]
+name = "agent"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.129.2",
+    "langwatch-scenario>=0.7.16",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "hypothesis>=6.151.9",
+    "pytest>=9.0.2",
+]
