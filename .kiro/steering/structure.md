@@ -28,7 +28,7 @@ Feature specifications following the spec-driven development workflow:
 Source code structure will be established as the project develops. Common patterns:
 - `src/` - Main source code
 - `tests/` - Test files
-- `docs/` - Documentation
+- `docs/` - Documentation and changes (all markdowns)
 - `scripts/` - Utility scripts
 
 ## Conventions
