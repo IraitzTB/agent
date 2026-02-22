@@ -17,15 +17,23 @@ TBBot is a FastAPI-based REST API that provides an interactive Q&A system for te
 
 ## Quick Start
 
+**New to TBBot?** See [SETUP.md](SETUP.md) for detailed setup instructions.
+
 ```bash
-# Install dependencies
+# 1. Install dependencies
 uv sync
 
-# Run the API server
+# 2. Configure environment (copy .env.example to .env and add your OpenAI API key)
+cp .env.example .env
+
+# 3. Run tests
+uv run pytest
+
+# 4. Run the API server
 uv run fastapi dev src/tbbot/api.py
 
-# Run tests
-uv run scenario
+# 5. Run scenario tests
+uv run pytest tests/test_*_scenarios.py -v
 ```
 
 ## API Endpoints
@@ -55,17 +63,37 @@ This project follows spec-driven development:
 
 ## Testing
 
-Tests use the pytest framework for agent functionality testing:
+Tests use pytest with the Scenario framework for agent simulation testing.
+
+For detailed testing documentation, see [tests/README_SCENARIOS.md](tests/README_SCENARIOS.md).
 
 ```bash
 # Run all tests
 uv run pytest
 
-# Run specific test
-uv run pytest tests/test_greeting_agent.py
+# Run only scenario tests
+uv run pytest tests/test_*_scenarios.py -v
+
+# Run specific test file
+uv run pytest tests/test_greeting_scenarios.py
+
+# Run with visible output
+uv run pytest -s
 
 # Verbose output
 uv run pytest -v
+```
+
+### Environment Setup for Tests
+
+Scenario tests require an OpenAI API key:
+
+```bash
+# Copy example file
+cp .env.example .env
+
+# Edit .env and add your key
+OPENAI_API_KEY=your-key-here
 ```
 
 ## Key Features
