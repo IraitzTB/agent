@@ -39,7 +39,7 @@ Three comprehensive test suites using the Scenario framework:
   - Pytest settings (pythonpath, asyncio mode)
 
 ### 4. Documentation
-- **tests/README_SCENARIOS.md** - Comprehensive scenario testing guide
+- **docs/README_SCENARIOS.md** - Comprehensive scenario testing guide
 - **SETUP.md** - Quick setup guide for new developers
 - **README.md** updated with testing instructions
 
@@ -150,4 +150,4 @@ env:
 - [Scenario Documentation](https://scenario.langwatch.ai)
 - [LangWatch Platform](https://app.langwatch.ai)
 - [OpenAI API Keys](https://platform.openai.com/api-keys)
-- [tests/README_SCENARIOS.md](../../tests/README_SCENARIOS.md) - Detailed guide
+- [docs/README_SCENARIOS.md](../../docs/README_SCENARIOS.md) - Detailed guide

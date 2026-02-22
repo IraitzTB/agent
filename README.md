@@ -17,7 +17,7 @@ TBBot is a FastAPI-based REST API that provides an interactive Q&A system for te
 
 ## Quick Start
 
-**New to TBBot?** See [SETUP.md](SETUP.md) for detailed setup instructions.
+**New to TBBot?** See [SETUP.md](docs/SETUP.md) for detailed setup instructions.
 
 ```bash
 # 1. Install dependencies
@@ -65,7 +65,7 @@ This project follows spec-driven development:
 
 Tests use pytest with the Scenario framework for agent simulation testing.
 
-For detailed testing documentation, see [tests/README_SCENARIOS.md](tests/README_SCENARIOS.md).
+For detailed testing documentation, see [README_SCENARIOS.md](docs/README_SCENARIOS.md).
 
 ```bash
 # Run all tests
