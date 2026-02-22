@@ -15,7 +15,6 @@ env:
 jobs:
   test:
     name: Run Tests
-    if: github.ref_name == 'develop'
     runs-on: ubuntu-latest
     
     steps:
