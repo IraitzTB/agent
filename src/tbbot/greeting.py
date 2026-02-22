@@ -40,7 +40,7 @@ def is_greeting(message: str) -> bool:
     message_lower = message.lower()
     
     # Check for greeting keywords
-    greeting_keywords = ["hello", "hi", "hey"]
+    greeting_keywords = ["hello", "hi"]
     return any(keyword in message_lower for keyword in greeting_keywords)
 
 

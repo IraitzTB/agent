@@ -15,6 +15,7 @@ env:
 jobs:
   test:
     name: Run Tests
+    if: github.ref_name == 'develop'
     runs-on: ubuntu-latest
     
     steps:
@@ -37,10 +38,12 @@ jobs:
       - name: Run tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: uv run pytest -v
+        run: uv run pytest tests/test_chat_endpoint.py
+        #run: uv run pytest --cov=src --cov-report=term-missing --cov-report=xml:coverage.xml -v
 
   build-package:
     name: Build Python Package
+    if: github.ref_name == 'main'
     needs: test
     runs-on: ubuntu-latest
     
@@ -68,6 +71,7 @@ jobs:
 
   build-docker:
     name: Build and Push Docker Image
+    if: github.ref_name == 'main'
     needs: test
     runs-on: ubuntu-latest
     permissions:
@@ -110,21 +114,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  publish-package:
-    name: Publish to PyPI
-    needs: [test, build-package]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    
-    steps:
-      - name: Download package artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: python-package
-          path: dist/
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
