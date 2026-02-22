@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "agnodocs" : {
+      "url" : "https://docs.agno.com/mcp"
+    },
+    "scenario Docs": {
+      "url": "https://gitmcp.io/langwatch/scenario"
+    }
+  }
+}
