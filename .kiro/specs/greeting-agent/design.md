@@ -49,28 +49,34 @@ The architecture follows a simple pipeline pattern:
 
 ### 1. Greeting Detector
 
-**Purpose**: Identifies whether a student message contains a greeting
+**Purpose**: Identifies whether a student message contains a greeting and determines the language
 
 **Interface**:
 ```python
-def is_greeting(message: str) -> bool:
+def detect_greeting(message: str) -> tuple[bool, str | None]:
     """
-    Detects if a message contains a greeting keyword.
+    Detects if a message contains a greeting keyword and identifies the language.
     
     Args:
         message: The student's input message
         
     Returns:
-        True if message contains greeting keywords, False otherwise
+        Tuple of (is_greeting, language_code) where language_code is one of:
+        'en' (English), 'ca' (Catalan), 'eu' (Basque), 'gl' (Galician), or None
     """
 ```
 
 **Implementation Strategy**:
 - Convert message to lowercase for case-insensitive matching
-- Check for presence of greeting keywords: "hello", "hi", "hey"
-- Return boolean result
+- Check for presence of greeting keywords in priority order
+- Return both detection result and detected language
+- Language detection is mutually exclusive (first match wins)
 
-**Keywords**: ["hello", "hi", "hey"]
+**Keywords by Language**:
+- English: ["hello", "hi", "hey"]
+- Catalan: ["hola"]
+- Basque: ["kaixo"]
+- Galician: ["ola"]
 
 ### 2. Agno Agent Handler
 
@@ -107,20 +113,27 @@ class GreetingAgent:
 
 ### 3. Response Generator
 
-**Purpose**: Produces the standardized greeting response
+**Purpose**: Produces the appropriate greeting response based on detected language
 
 **Interface**:
 ```python
-def generate_greeting_response() -> str:
+def generate_greeting_response(language_code: str) -> str:
     """
-    Generate the standard TBBot greeting message.
+    Generate the TBBot greeting message in the specified language.
     
+    Args:
+        language_code: Language code ('en', 'ca', 'eu', 'gl')
+        
     Returns:
-        The greeting response string
+        The greeting response string in the specified language
     """
 ```
 
-**Response Format**: "Hi, my name is TBBot. I am here to help you with your questions"
+**Response Formats by Language**:
+- English ('en'): "Hi, my name is TBBot. I am here to help you with your questions"
+- Catalan ('ca'): "Hola, el meu nom és TBBot. Estic aquí per ajudar-te amb les teves preguntes"
+- Basque ('eu'): "Kaixo, nire izena TBBot da. Hemen nago zure galderekin laguntzeko"
+- Galician ('gl'): "Ola, o meu nome é TBBot. Estou aquí para axudarche coas túas preguntas"
 
 ## Data Models
 
