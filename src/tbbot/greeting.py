@@ -23,35 +23,60 @@ class Response:
     timestamp: float
 
 
-def is_greeting(message: str) -> bool:
+def detect_greeting_language(message: str) -> str | None:
     """
-    Detects if a message contains a greeting keyword.
+    Detects if a message contains a greeting and returns the language.
     
     Args:
         message: The student's input message
         
     Returns:
-        True if message contains greeting keywords, False otherwise
+        Language code ('en', 'ca', 'eu', 'gl') if greeting detected, None otherwise
     """
-    if not message:
-        return False
+    if not message or not message.strip():
+        return None
     
     # Convert to lowercase for case-insensitive matching
     message_lower = message.lower()
     
-    # Check for greeting keywords
-    greeting_keywords = ["hello", "hi"]
-    return any(keyword in message_lower for keyword in greeting_keywords)
-
-
-def generate_greeting_response() -> str:
-    """
-    Generate the standard TBBot greeting message.
+    # Define greetings by language with priority order
+    # Order matters: first match wins
+    greetings = [
+        (["hello", "hi", "hey"], "en"),  # English
+        (["hola"], "ca"),  # Catalan
+        (["kaixo"], "eu"),  # Basque
+        (["ola"], "gl"),  # Galician
+    ]
     
-    Returns:
-        The greeting response string
+    # Split message into words for whole-word matching
+    words = message_lower.split()
+    
+    # Check each language's greetings in priority order
+    for keywords, language in greetings:
+        if any(keyword in words for keyword in keywords):
+            return language
+    
+    return None
+
+
+def generate_greeting_response(language: str) -> str:
     """
-    return "Hi, my name is TBBot. I am here to help you with your questions"
+    Generate the TBBot greeting message in the specified language.
+    
+    Args:
+        language: Language code ('en', 'ca', 'eu', 'gl')
+        
+    Returns:
+        The greeting response string in the specified language
+    """
+    responses = {
+        "en": "Hi, my name is TBBot. I am here to help you with your questions",
+        "ca": "Hola, el meu nom és TBBot. Estic aquí per ajudar-te amb les teves preguntes",
+        "eu": "Kaixo, nire izena TBBot da. Hemen nago zure galderekin laguntzeko",
+        "gl": "Ola, o meu nome é TBBot. Estou aquí para axudarche coas túas preguntas",
+    }
+    
+    return responses.get(language, responses["en"])
 
 
 class GreetingAgent:
@@ -82,12 +107,14 @@ class GreetingAgent:
             message: The student's input message
             
         Returns:
-            Response string (greeting or empty)
+            Response string (greeting in detected language or empty)
         """
-        # Detect if the message is a greeting
-        if is_greeting(message):
-            # Generate and return greeting response
-            return generate_greeting_response()
+        # Detect if the message is a greeting and get the language
+        language = detect_greeting_language(message)
+        
+        if language:
+            # Generate and return greeting response in detected language
+            return generate_greeting_response(language)
         
         # Return empty string for non-greeting messages
         return ""
