@@ -11,6 +11,7 @@ This document specifies the requirements for TBBot's greeting functionality, the
 - **Greeting**: A message from a student that initiates conversation (e.g., "hello", "hi", "hey")
 - **Agno_Framework**: The Python-based agent orchestration framework used to build TBBot
 - **Scenario_Framework**: The testing framework used to verify TBBot's behavior
+- **Cooficial_Language**: One of the official languages of Spain alongside Spanish: Catalan, Basque (Euskera), or Galician
 
 ## Requirements
 
@@ -56,7 +57,19 @@ This document specifies the requirements for TBBot's greeting functionality, the
 2. THE TBBot SHALL accept text messages as input
 3. THE TBBot SHALL return text messages as output
 
-### Requirement 5: Testing Support
+### Requirement 5: Multilingual Greeting Support
+
+**User Story:** As a student from a region with a cooficial language in Spain, I want TBBot to greet me in my language (Catalan, Basque, or Galician), so that I feel welcomed in my native language.
+
+#### Acceptance Criteria
+
+1. WHEN a student sends a message containing "hola" in Catalan, THE TBBot SHALL respond with "Hola, el meu nom és TBBot. Estic aquí per ajudar-te amb les teves preguntes"
+2. WHEN a student sends a message containing "kaixo" in Basque, THE TBBot SHALL respond with "Kaixo, nire izena TBBot da. Hemen nago zure galderekin laguntzeko"
+3. WHEN a student sends a message containing "ola" in Galician, THE TBBot SHALL respond with "Ola, o meu nome é TBBot. Estou aquí para axudarche coas túas preguntas"
+4. THE TBBot SHALL perform case-insensitive detection for cooficial language greetings
+5. WHEN a student sends a greeting in a Cooficial_Language, THE TBBot SHALL respond in the same language
+
+### Requirement 6: Testing Support
 
 **User Story:** As a developer, I want to verify TBBot's greeting behavior through automated tests, so that I can ensure it works correctly.
 
