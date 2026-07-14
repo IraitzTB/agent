@@ -1,6 +1,8 @@
-# TBBot - Educational AI Agent
+# TBBot Educational AI Agent
 
 An educational AI agent that helps students learn how to code AI agents for various purposes.
+
+[![CI/CD Pipeline](https://github.com/IraitzTB/agent/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/IraitzTB/agent/actions/workflows/ci-cd.yml)
 
 ## Overview
 
