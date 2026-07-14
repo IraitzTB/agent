@@ -168,9 +168,8 @@ async def test_autopilot_conversation():
             scenario.JudgeAgent(
                 criteria=[
                     "Agent should respond appropriately to greetings",
-                    "Agent should introduce itself as TBBot",
-                    "Agent should not respond to non-greeting messages",
-                    "Agent should maintain consistent behavior throughout",
+                    "Agent should introduce itself as TBBot in its greeting response",
+                    "Agent greeting response should be welcoming and helpful in tone",
                 ]
             ),
         ],

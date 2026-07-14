@@ -5,6 +5,7 @@ for processing student greetings and generating appropriate responses.
 """
 
 import logging
+import re
 from dataclasses import dataclass
 from time import time
 
@@ -48,8 +49,8 @@ def detect_greeting_language(message: str) -> str | None:
         (["ola"], "gl"),  # Galician
     ]
     
-    # Split message into words for whole-word matching
-    words = message_lower.split()
+    # Split message into words and strip punctuation for whole-word matching
+    words = [re.sub(r"[^\w]", "", w) for w in message_lower.split()]
     
     # Check each language's greetings in priority order
     for keywords, language in greetings:
