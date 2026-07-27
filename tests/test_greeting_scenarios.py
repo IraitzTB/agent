@@ -116,7 +116,13 @@ async def test_non_greeting_message():
 @pytest.mark.agent_test
 @pytest.mark.asyncio
 async def test_case_insensitive_greeting():
-    """Test that greetings work regardless of case."""
+    """Test that greetings work regardless of case.
+
+    Uses an explicit script (rather than an LLM user simulator + judge) so the
+    exact capitalisations under test ("HELLO", "HeLLo", "hello") are actually
+    sent. The autopilot variant was flaky: the simulator only ever produced
+    lowercase "hello", so the judge could never confirm case-insensitivity.
+    """
     result = await scenario.run(
         name="case insensitive greeting",
         description="""
@@ -126,18 +132,32 @@ async def test_case_insensitive_greeting():
         agents=[
             GreetingAgentAdapter(),
             scenario.UserSimulatorAgent(),
-            scenario.JudgeAgent(
-                criteria=[
-                    "Agent should respond to greetings in any case",
-                    "Agent should provide consistent greeting response",
-                ]
-            ),
         ],
-        max_turns=4,
+        script=[
+            scenario.user("HELLO"),
+            scenario.agent(),
+            lambda state: assert_greeting_response(state),
+            scenario.user("HeLLo"),
+            scenario.agent(),
+            lambda state: assert_greeting_response(state),
+            scenario.user("hello"),
+            scenario.agent(),
+            lambda state: assert_greeting_response(state),
+            scenario.succeed(),
+        ],
         set_id="greeting-scenarios",
     )
-    
+
     assert result.success
+
+
+def assert_greeting_response(state: scenario.ScenarioState):
+    """Assert that the last agent response is a (non-empty) greeting."""
+    last_message = state.messages[-1]
+    assert last_message["role"] == "assistant"
+    content = last_message["content"]
+    assert content != "", "Agent should respond to a greeting"
+    assert "TBBot" in content, "Greeting should mention TBBot"
 
 
 def assert_empty_response(state: scenario.ScenarioState):

@@ -106,7 +106,13 @@ async def test_api_multiple_requests():
 @pytest.mark.agent_test
 @pytest.mark.asyncio
 async def test_api_error_handling():
-    """Test API behavior with various input types."""
+    """Test API behavior with various input types.
+
+    Uses an explicit script (rather than an LLM user simulator + judge) so a
+    real greeting is actually sent (the autopilot variant had the simulator
+    send a single message *listing* weird inputs to try, which is not a
+    greeting, so the API correctly returned "" and the judge failed it).
+    """
     result = await scenario.run(
         name="API input validation",
         description="""
@@ -116,25 +122,44 @@ async def test_api_error_handling():
         agents=[
             APIAgentAdapter(),
             scenario.UserSimulatorAgent(),
-            scenario.JudgeAgent(
-                criteria=[
-                    "API should handle all inputs without errors",
-                    "API should respond appropriately to greetings",
-                    "API should not crash on unusual inputs",
-                ]
-            ),
         ],
-        max_turns=6,
+        script=[
+            # A genuine greeting must still get a proper greeting response.
+            scenario.user("hello"),
+            scenario.agent(),
+            lambda state: check_api_greeting(state),
+            # Unusual / hostile inputs must not crash the API (no "Error:" prefix).
+            scenario.user("!@#$%^&*()_+-="),
+            scenario.agent(),
+            lambda state: check_api_no_error(state),
+            scenario.user("' OR 1=1; DROP TABLE users;--"),
+            scenario.agent(),
+            lambda state: check_api_no_error(state),
+            scenario.user("<script>alert(1)</script>"),
+            scenario.agent(),
+            lambda state: check_api_no_error(state),
+            scenario.user("../../../../etc/passwd"),
+            scenario.agent(),
+            lambda state: check_api_no_error(state),
+            scenario.succeed(),
+        ],
         set_id="api-scenarios",
     )
-    
+
     assert result.success
 
 
 @pytest.mark.agent_test
 @pytest.mark.asyncio
 async def test_api_concurrent_behavior():
-    """Test API behavior simulating concurrent users."""
+    """Test API behavior simulating concurrent users.
+
+    Uses an explicit script (rather than an LLM user simulator + judge) so
+    greetings are actually sent. The /chat endpoint is stateless, so
+    independence is shown by interleaving greetings with a non-greeting:
+    the non-greeting still returns "" (no state leaks from prior greetings)
+    and each greeting gets its own correct response.
+    """
     result = await scenario.run(
         name="API concurrent users",
         description="""
@@ -144,18 +169,29 @@ async def test_api_concurrent_behavior():
         agents=[
             APIAgentAdapter(),
             scenario.UserSimulatorAgent(),
-            scenario.JudgeAgent(
-                criteria=[
-                    "API should handle requests independently",
-                    "Each greeting should get a proper response",
-                    "No cross-contamination between requests",
-                ]
-            ),
         ],
-        max_turns=8,
+        script=[
+            # User 1 greets -> proper greeting response.
+            scenario.user("hello"),
+            scenario.agent(),
+            lambda state: check_api_greeting(state),
+            # User 2 sends a non-greeting -> empty, independent of user 1.
+            scenario.user("what is machine learning?"),
+            scenario.agent(),
+            lambda state: check_api_empty(state),
+            # User 3 greets in another language -> own correct response.
+            scenario.user("hola"),
+            scenario.agent(),
+            lambda state: check_api_greeting(state),
+            # User 4 greets again -> still a proper, independent response.
+            scenario.user("hey"),
+            scenario.agent(),
+            lambda state: check_api_greeting(state),
+            scenario.succeed(),
+        ],
         set_id="api-scenarios",
     )
-    
+
     assert result.success
 
 
@@ -177,3 +213,18 @@ def check_api_empty(state: scenario.ScenarioState):
     assert last_message["role"] == "assistant"
     content = last_message["content"]
     assert content == "", "API should return empty for non-greeting"
+
+
+def check_api_no_error(state: scenario.ScenarioState):
+    """Verify the API handled an unusual input gracefully (no error/crash).
+
+    The APIAgentAdapter returns an ``"Error: <status>"`` string when the
+    endpoint responds with a non-200 status; a 200 with an empty (non-greeting)
+    body is the expected graceful outcome here.
+    """
+    last_message = state.messages[-1]
+    assert last_message["role"] == "assistant"
+    content = last_message["content"]
+    assert not content.startswith("Error:"), (
+        f"API should not return an error for unusual input, got: {content!r}"
+    )

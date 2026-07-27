@@ -34,11 +34,13 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Run tests
+      - name: Run tests with coverage
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: uv run pytest tests/test_chat_endpoint.py
-        #run: uv run pytest --cov=src --cov-report=term-missing --cov-report=xml:coverage.xml -v
+        run: uv run pytest --cov=. --cov-report=xml:cobertura.xml
+        with:
+          file: cobertura.xml
+          language: Python
 
   build-package:
     name: Build Python Package

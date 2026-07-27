@@ -49,24 +49,48 @@ def detect_greeting_language(message: str) -> str | None:
         (["ola"], "gl"),  # Galician
     ]
     
-    # Split message into words and strip punctuation for whole-word matching
+    # Split message into words and strip punctuation. A greeting is detected
+    # when a cleaned token *starts with* one of the greeting keywords. This is
+    # intentionally more permissive than exact whole-word matching (so "hiya",
+    # "hello123" and "heya" are still detected as greetings) but more precise
+    # than a naive substring search (so "machine" is NOT treated as "hi").
     words = [re.sub(r"[^\w]", "", w) for w in message_lower.split()]
-    
+    words = [w for w in words if w]  # drop empty tokens left by punctuation-only input
+
     # Check each language's greetings in priority order
     for keywords, language in greetings:
-        if any(keyword in words for keyword in keywords):
+        if any(any(w.startswith(keyword) for w in words) for keyword in keywords):
             return language
-    
+
     return None
 
 
-def generate_greeting_response(language: str) -> str:
+def is_greeting(message: str) -> bool:
+    """
+    Return True if `message` contains a greeting, False otherwise.
+
+    A thin boolean wrapper around :func:`detect_greeting_language` for callers
+    that only need to know *whether* a message is a greeting (not which
+    language the greeting is in).
+
+    Args:
+        message: The student's input message
+
+    Returns:
+        True if a greeting is detected, False otherwise (including for
+        empty or whitespace-only input)
+    """
+    return detect_greeting_language(message) is not None
+
+
+def generate_greeting_response(language: str = "en") -> str:
     """
     Generate the TBBot greeting message in the specified language.
-    
+
     Args:
-        language: Language code ('en', 'ca', 'eu', 'gl')
-        
+        language: Language code ('en', 'ca', 'eu', 'gl'). Defaults to 'en'
+            so the common no-argument call returns the English greeting.
+
     Returns:
         The greeting response string in the specified language
     """
